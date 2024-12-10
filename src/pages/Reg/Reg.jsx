@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/authContext";
 import { Link, useNavigate } from "react-router-dom";
+import ZnaniumAPI from "../../API/API";
 import "./Reg.css";
 
 
@@ -11,20 +12,50 @@ function Reg() {
     name: "",
     email: "",
     password: "",
-    role: "teacher",
-		phone: "",
+    role_id: "teacher",
+		phone_number: "",
   });
+
+	const mapRoleToId = (role) => {
+		switch (role) {
+			case "student":
+				return 1;
+			case "teacher":
+				return 2;
+			case "employer":
+				return 3;
+			case "admin":
+				return 4;
+			default:
+				return 0;
+		}
+	}
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitted data:", formData);
-    // Api
-
+		const userData = {
+			...formData,
+			role_id: mapRoleToId(formData.role_id),
+			is_active: true,
+    	is_superuser: false,
+    	is_verified: false,
+		};
+		console.log(userData);
+		try {
+			const response = await ZnaniumAPI.regin(userData)
+			console.log(response);
+			API.login(userData.email, userData.password)
+		}
+		catch (error){ 
+			console.log(error);
+			
+		}
+		
 		login()
 		navigate("/")
   };
@@ -70,7 +101,7 @@ function Reg() {
           Phone:
           <input
             type="tel"
-            name="phone"
+            name="phone_number"
             value={formData.phone}
             onChange={handleChange}
             required
@@ -80,8 +111,8 @@ function Reg() {
         <label>
           Role:
           <select
-            name="role"
-            value={formData.role}
+            name="role_id"
+            value={formData.role_id}
             onChange={handleChange}
           >
             <option value="teacher">Teacher</option>

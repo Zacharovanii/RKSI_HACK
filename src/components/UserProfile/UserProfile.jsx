@@ -1,8 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './UserProfile.css';
+import { useAuth } from '../../hooks/authContext';
+import ZnaniumApi from '../../API/API';
 
 function UserProfile() {
-  return (
+  const { logout } = useAuth()
+
+	const exit = async () => {
+		const response = await ZnaniumApi.logout()
+		logout()
+		console.log(response);
+		
+	}
+
+	async function getUser() {
+		await ZnaniumApi.getUserProfileData()
+		console.log(response);
+	}
+
+	useEffect(() => {
+		async function getUser() {
+			await ZnaniumApi.getUserProfileData()
+			console.log(response);
+		}
+		getUser()
+	}, [])
+
+	return (
     <div className="user-profile">
       <div className="user-info">
         <div className="avatar"></div>
@@ -29,6 +53,7 @@ function UserProfile() {
           </ul>
         </div>
       </div>
+			<button onClick={exit} >logout</button>
     </div>
   );
 }

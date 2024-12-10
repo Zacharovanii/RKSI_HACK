@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../hooks/authContext";
 import { Link, useNavigate } from "react-router-dom";
+import ZnaniumApi from "../../API/API";
 import "./Login.css";
 
 function Login() {
@@ -17,11 +18,14 @@ function Login() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Login data:", formData);
     // Api
 
+		const response = await ZnaniumApi.login(formData.email, formData.password)
+		console.log(response);
+		
 		login()
 		navigate("/")
   };
