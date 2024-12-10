@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 from fastapi_users import schemas
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
+=======
+from pydantic import EmailStr
+from pydantic import BaseModel, Field
+from typing import Any
+        
+>>>>>>> c49dd548dbc9b7b7d0f54d008c0060410801d24d
 
 
 class UserRead(schemas.BaseUser[int]):
