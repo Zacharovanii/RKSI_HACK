@@ -1,7 +1,7 @@
 from datetime import datetime
-from sqlalchemy import TIMESTAMP, String, Integer
+from sqlalchemy import ARRAY, TIMESTAMP, String, Integer
 from sqlalchemy.orm import Mapped, mapped_column
-# from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.ext.mutable import MutableList
 from src.db.base_class import Base
 
 
@@ -10,7 +10,7 @@ class Lecture(Base):
     lecture_name: Mapped[str] = mapped_column(String(length=320), nullable=False)
 
     content: Mapped[str] = mapped_column(String, nullable=False)
-    video_link: Mapped[str] = mapped_column(String, nullable=False, default="The video has not been uploaded yet.")
+    video_link: Mapped[list[str]] = mapped_column(MutableList.as_mutable(ARRAY(String)), default="The video has not been uploaded yet.")
 
     # viewers: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])
     author: Mapped[int] = mapped_column(Integer, nullable=False)

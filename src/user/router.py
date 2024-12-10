@@ -36,7 +36,7 @@ async def my_profile(user: User = Depends(current_user)):
     return {"state": 200, "user": user}
 
 
-@router.put("/my-profile/edit")
+@router.put("/my-profile-settings")
 async def my_profile_settings(
     user_update: UserEdit,
     user: User = Depends(current_user)
