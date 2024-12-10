@@ -9,7 +9,39 @@ from src.user.router import current_user
 
 router = APIRouter()
 
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from src.db.models import Lecture, LectureModel, User
+from src.db.session import async_engine
+from datetime import datetime
 
+router = APIRouter()
+
+@router.put("/lectures/create")
+async def create_lecture(new_lecture: LectureModel, user: User = Depends(current_user)):
+    async with AsyncSession(async_engine) as session:
+        # Проверка прав пользователя
+        if user.role_id != 1:
+            raise HTTPException(status_code=403, detail="Недостаточно прав для создания лекций.")
+
+        # Создание новой лекции
+        lecture = Lecture(
+            lecture_name=new_lecture.lecture_name,
+            content=new_lecture.content,
+            video_link=new_lecture.video_link,
+            author=user.id,
+            posted_at=datetime.utcnow()
+        )
+
+        # Добавление лекции в сессию и сохранение в БД
+        session.add(lecture)
+        await session.commit()
+        await session.refresh(lecture)
+
+        return {"message": "Лекция успешно создана.", "lecture": lecture}
+
+    
 @router.get("/lectures")
 async def list_lectures() -> list:
     async with AsyncSession(async_engine) as session:
