@@ -1,0 +1,21 @@
+.sidebar {
+  width: 200px;
+  height: 100vh;
+  background-color: #f4f4f4;
+  padding: 20px;
+  position: fixed;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menuItem {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.menuItem.active {
+  background-color: #ddd;
+}
