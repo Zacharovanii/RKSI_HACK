@@ -1,39 +1,48 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './UserProfile.css';
 import { useAuth } from '../../hooks/authContext';
 import ZnaniumApi from '../../API/API';
 
 function UserProfile() {
   const { logout } = useAuth()
+	const [userData, setUserData] = useState({
+    email: '',
+    name: '',
+    phone_number: '',
+  });
 
 	const exit = async () => {
-		const response = await ZnaniumApi.logout()
 		logout()
+		const response = await ZnaniumApi.logout()
 		console.log(response);
 		
 	}
 
-	async function getUser() {
-		await ZnaniumApi.getUserProfileData()
-		console.log(response);
-	}
-
 	useEffect(() => {
 		async function getUser() {
-			await ZnaniumApi.getUserProfileData()
-			console.log(response);
+			const response = await ZnaniumApi.getUserProfileData()
+			console.log(response.data.user)
+			return response.data.user
 		}
-		getUser()
-	}, [])
+		getUser().then((user) => {
+      if (user) {
+        setUserData({
+          email: user.email,
+          name: user.name,
+          phone_number: user.phone_number,
+        });
+      }
+    });
+  }, []);
 
 	return (
     <div className="user-profile">
       <div className="user-info">
         <div className="avatar"></div>
         <div className="user-details">
-          <h2>Иванов Иван Иванович</h2>
-          <p>+7 (800) 555-35-35</p>
-          <p>pochta@gmail.ru</p>
+          <h2>{userData.name}</h2>
+          <p>{userData.phone_number}</p>
+          <p>{userData.email}</p>
         </div>
       </div>
 

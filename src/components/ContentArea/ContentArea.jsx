@@ -1,6 +1,7 @@
 import React from 'react';
 import UserProfile from '../UserProfile/UserProfile';
 import './ContentArea.css';
+import LectureList from '../LecturesList';
 
 function ContentArea({ selectedMenu }) {
   const renderContent = () => {
@@ -8,7 +9,7 @@ function ContentArea({ selectedMenu }) {
       case 'Личный кабинет':
         return <UserProfile /> ;
       case 'Занятия':
-        return <div>Контент для Занятий</div>;
+        return <LectureList/>;
       case 'Преподаватели':
         return <div>Контент для Преподавателей</div>;
       case 'Вакансии':
