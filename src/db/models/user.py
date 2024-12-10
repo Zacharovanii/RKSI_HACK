@@ -29,5 +29,5 @@ class User(SQLAlchemyBaseUserTable[int], Base):
 
     registered_at: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.utcnow, nullable=False)
 
-    # Use a string for the relationship to avoid circular import
     messages: Mapped[list["Message"]] = relationship("Message", back_populates="author")
+    chat_ids: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])

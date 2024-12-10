@@ -38,7 +38,7 @@ async def my_profile(user: User = Depends(current_user)):
     return {"state": 200, "user": user}
 
 
-@router.put("/my-profile-settings")
+@router.put("/my-profile/edit")
 async def my_profile_settings(
     user_update: UserEdit,
     user: User = Depends(current_user)
@@ -78,7 +78,7 @@ async def my_profile_settings(
 
 @router.delete("/delete-user", status_code=200)
 async def delete_user(
-    user: User = Depends(current_user),  # текущий пользователь через Depends
+    user: User = Depends(current_user),
     session: AsyncSession = Depends(get_async_session),
 ):
     user_db = await get_user_db(session)
