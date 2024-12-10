@@ -1,14 +1,11 @@
 from enum import Enum
 from fastapi import FastAPI
-from fastapi_users import FastAPIUsers
 from src.auth.auth import auth_backend
 from src.auth.schemas import UserCreate, UserRead
-from src.auth.manager import get_user_manager
-from src.db.models.user import User
 from src.settings import settings
 from fastapi.middleware.cors import CORSMiddleware
-
-
+from src.user.router import router as router_user
+from src.user.router import fastapi_users
 app = FastAPI(
         title = settings.PROJECT_NAME,
         version = settings.PROJECT_VERSION
@@ -32,16 +29,7 @@ app.add_middleware(
 
 class Tags(Enum):
     users = 'users_funcs'
-    events = 'events_funcs'
-    points = 'points_funcs'
-    achievements = 'achievements_funcs'
     roles = 'roles_funcs'
-
-
-fastapi_users = FastAPIUsers[User, int](
-    get_user_manager,
-    [auth_backend],
-)
 
 
 # Объявление роутеров
@@ -54,4 +42,8 @@ app.include_router(
     fastapi_users.get_register_router(UserRead, UserCreate),
     prefix="/auth",
     tags=[Tags.users],
+)
+app.include_router(
+    router_user,
+    tags=[Tags.users]
 )
