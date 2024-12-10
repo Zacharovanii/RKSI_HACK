@@ -5,6 +5,7 @@ from src.auth.schemas import UserCreate, UserRead
 from src.settings import settings
 from fastapi.middleware.cors import CORSMiddleware
 from src.user.router import router as router_user
+from src.lecture.router import router as router_lecture
 from src.user.router import fastapi_users
 app = FastAPI(
         title = settings.PROJECT_NAME,
@@ -30,6 +31,7 @@ app.add_middleware(
 class Tags(Enum):
     users = 'users_funcs'
     roles = 'roles_funcs'
+    lecture = "lecture_funcs"
 
 
 # Объявление роутеров
@@ -46,4 +48,8 @@ app.include_router(
 app.include_router(
     router_user,
     tags=[Tags.users]
+)
+app.include_router(
+    router_lecture,
+    tags=[Tags.lecture]
 )
