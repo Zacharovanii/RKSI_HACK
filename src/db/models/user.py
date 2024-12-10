@@ -1,8 +1,9 @@
 from datetime import datetime
 from fastapi_users.db import SQLAlchemyBaseUserTable
-from sqlalchemy import Boolean, String, Integer
+from sqlalchemy import ARRAY, TIMESTAMP, Boolean, String, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 from src.db.base_class import Base
+from sqlalchemy.ext.mutable import MutableList
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
@@ -15,7 +16,15 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     name: Mapped[str] = mapped_column(String(length=320), nullable=False)
 
     role_id: Mapped[int] = mapped_column(Integer, default=0)
+
+    watched_lectures: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])
+    planed_lectures: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])
+    posted_lectures: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])
+
+    posted_vacancies: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])
     
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    registered_at: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.utcnow, nullable=False)

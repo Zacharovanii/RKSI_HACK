@@ -1,4 +1,3 @@
-from fastapi_users import schemas
 from pydantic import EmailStr
 from pydantic import BaseModel, Field
 from typing import Any

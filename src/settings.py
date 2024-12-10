@@ -7,7 +7,7 @@ load_dotenv(dotenv_path = env_path)
 
 class Settings:
     PROJECT_NAME:str = "Znanium"
-    PROJECT_VERSION: str = "0.0.3"
+    PROJECT_VERSION: str = "0.0.1"
 
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
@@ -17,6 +17,7 @@ class Settings:
     DATABASE_URL = (f"postgresql+asyncpg://{POSTGRES_USER}:"
                     f"{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:"
                     f"{POSTGRES_PORT}/{POSTGRES_DB}")
-    SECRET = os.environ.get("SECRET_MANAGER_USER")
     SECRET_MANAGER_USER = os.environ.get("SECRET")
+    SECRET = os.environ.get("SECRET_MANAGER_USER")
+
 settings = Settings()
