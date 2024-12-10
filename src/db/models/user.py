@@ -4,7 +4,7 @@ from sqlalchemy import ARRAY, TIMESTAMP, Boolean, String, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 from src.db.base_class import Base
 from sqlalchemy.ext.mutable import MutableList
-
+from sqlalchemy.orm import relationship
 
 class User(SQLAlchemyBaseUserTable[int], Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, nullable=False)
@@ -22,9 +22,12 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     posted_lectures: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])
 
     posted_vacancies: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])
-    
+
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     registered_at: Mapped[datetime] = mapped_column(TIMESTAMP, default=datetime.utcnow, nullable=False)
+
+    # Use a string for the relationship to avoid circular import
+    messages: Mapped[list["Message"]] = relationship("Message", back_populates="author")

@@ -1,11 +1,11 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import List, Optional
 
 class LectureCreateModel(BaseModel):
     lecture_name: str = Field(..., description="Название лекции", example="Как научиться программировать")
     content: str = Field(..., description="Описание лекции", example="Лекция о том, как начать путь в программировании")
-    video_links: Optional[list[str]]
+    video_links: Optional[List[Optional[str]]] = []
 
     class Config:
         orm_mode = True
@@ -14,7 +14,7 @@ class LectureCreateModel(BaseModel):
 class LectureEditModel(BaseModel):
     lecture_name: str
     content: str
-    video_link: Optional[list[str]]
+    video_links: Optional[list[str]]
 
     class Config:
         orm_mode = True

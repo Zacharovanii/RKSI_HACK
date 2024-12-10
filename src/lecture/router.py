@@ -17,9 +17,8 @@ async def get_all_lectures() -> list[LectureReadModel]:
         query = select(Lecture)
         result = await session.execute(query)
         lectures = result.scalars().all()
-
         return lectures
-    
+
 
 @router_lecture.get("/{lecture_id}", response_model=LectureReadModel)
 async def get_lecture(lecture_id: int) -> LectureReadModel:
@@ -30,7 +29,7 @@ async def get_lecture(lecture_id: int) -> LectureReadModel:
             raise HTTPException(status_code=404, detail=f"Лекция {lecture_id} не найдена.")
 
         return {
-            "message": f"The {lecture_id} lecture: ", 
+            "message": f"The {lecture_id} lecture: ",
             "lecture": lecture
         }
 
@@ -40,27 +39,25 @@ async def create_lecture(lecture: LectureCreateModel, user: User = Depends(curre
     async with AsyncSession(async_engine) as session:
         user = await session.get(User, user.id)
 
-        if user.role_id == 2 or user.role_id == 4:
+        if user.role_id in [2, 4]:
             new_lecture = Lecture(
                 lecture_name=lecture.lecture_name,
                 content=lecture.content,
                 video_link=lecture.video_links
             )
 
-            new_lecture.posted_at = datetime
+            new_lecture.posted_at = datetime.now()
             new_lecture.author = user.id
 
-            session.add(lecture)
+            session.add(new_lecture)
             await session.commit()
-            # await session.refresh(lecture)
 
             return {
                 "message": "Лекция успешно создана."
-                # "lecture": lecture
             }
         else:
             raise HTTPException(
-                status_code=403, 
+                status_code=403,
                 detail="Недостаточно прав для создания лекций."
             )
 
@@ -70,44 +67,45 @@ async def edit_lecture(lecture_id: int, new_lecture: LectureEditModel, user: Use
     async with AsyncSession(async_engine) as session:
         user = await session.get(User, user.id)
 
-        if user.id == 2 or user.role_id == 4:
+        if user.role_id in [2, 4]:
             lecture = await session.get(Lecture, lecture_id)
 
             if not lecture:
                 raise HTTPException(
-                    status_code=404, 
+                    status_code=404,
                     detail="Lecture not found"
                 )
 
             lecture.content = new_lecture.content
             lecture.lecture_name = new_lecture.lecture_name
-            lecture.video_link = new_lecture.video_link
+            lecture.video_links= new_lecture.video_links
 
             await session.commit()
             await session.refresh(lecture)
 
             return {
-                "message": "The lecture has been edited successfully", 
+                "message": "The lecture has been edited successfully",
                 "lecture": lecture
             }
         else:
             raise HTTPException(
-                status_code=403, 
+                status_code=403,
                 detail="Недостаточно прав для изменения лекций."
             )
-
 
 
 @router_lecture.delete("/{lecture_id}/delete")
 async def delete_lecture(lecture_id: int, user: User = Depends(current_user)):
     async with AsyncSession(async_engine) as session:
         user = await session.get(User, user.id)
-        if user.id == 2 or user.role_id == 4:
+
+        # Check if the user has role 2 or 4 to allow lecture deletion
+        if user.role_id in [2, 4]:
             lecture = await session.get(Lecture, lecture_id)
             if not lecture:
                 raise HTTPException(status_code=404, detail="Лекция не найдена.")
 
-            # Удаление лекции
+            # Delete the lecture
             await session.delete(lecture)
             await session.commit()
 

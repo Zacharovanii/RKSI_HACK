@@ -6,8 +6,7 @@ from src.db.models.user import User
 from src.db.session import async_engine
 from src.vacancy.schemas import VacancyCreateModel, VacancyReadModel, VacancyEditModel
 from sqlalchemy.orm.attributes import flag_modified
-from sqlalchemy import select 
-from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy import select
 from src.user.router import current_user
 
 router_vacancy = APIRouter()
@@ -37,12 +36,12 @@ async def get_vacancy(id: int) -> VacancyReadModel:
         return vacancy
     
 
-@router_vacancy.post("/")
+@router_vacancy.post("/create")
 async def create_vacancy(vacancy: VacancyCreateModel, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:
         user = await session.get(User, user.id)
 
-        if user.role_id == 3:
+        if user.role_id == 3 or user.role_id == 4:
             new_vacancy = Vacancy(
                 vacancy_name=vacancy.vacancy_name,
                 description=vacancy.description,

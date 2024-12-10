@@ -1,5 +1,6 @@
+import re
 from fastapi_users import schemas
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 from datetime import datetime
 
 
@@ -16,11 +17,28 @@ class UserRead(schemas.BaseUser[int]):
 
 
 class UserCreate(schemas.BaseUserCreate):
-    name: str
     email: EmailStr
-    phone_number: str
     password: str
+    phone_number: str
+    name: str
     role_id: int
+    
+    @validator("password")
+    def validate_password_complexity(cls, value: str):
+        """
+        Проверка сложности пароля:
+        - Минимум 8 символов (ограничено через Field);
+        - Должна содержать хотя бы одну заглавную букву;
+        - Должна содержать хотя бы одну цифру;
+        - Должна содержать хотя бы один специальный символ.
+        """
+        if not re.search(r"[A-Z]", value):
+            raise ValueError("Пароль должен содержать хотя бы одну заглавную букву")
+        if not re.search(r"[0-9]", value):
+            raise ValueError("Пароль должен содержать хотя бы одну цифру")
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
+            raise ValueError("Пароль должен содержать хотя бы один специальный символ")
+        return value
 
 class UserResponse:
     def __init__(self, user):
