@@ -5,8 +5,11 @@ from src.auth.schemas import UserCreate, UserRead
 from src.settings import settings
 from fastapi.middleware.cors import CORSMiddleware
 from src.user.router import router as router_user
-from src.lecture.router import router as router_lecture
+from src.vacancy.router import router_vacancy
+from src.lecture.router import router_lecture
 from src.user.router import fastapi_users
+
+
 app = FastAPI(
         title = settings.PROJECT_NAME,
         version = settings.PROJECT_VERSION
@@ -14,8 +17,8 @@ app = FastAPI(
 
 
 origins = [
-    "http://localhost:5173/",
-    "http://127.0.0.1:5173/",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
 ]
 
 
@@ -31,7 +34,8 @@ app.add_middleware(
 class Tags(Enum):
     users = 'users_funcs'
     roles = 'roles_funcs'
-    lecture = "lecture_funcs"
+    vacancy = 'vacancies_funcs'
+    lectures = 'lectures_funcs'
 
 
 # Объявление роутеров
@@ -50,6 +54,12 @@ app.include_router(
     tags=[Tags.users]
 )
 app.include_router(
+    router_vacancy,
+    tags=[Tags.vacancy],
+    prefix="/vacancy"
+)
+app.include_router(
     router_lecture,
-    tags=[Tags.lecture]
+    tags=[Tags.lectures],
+    prefix="/lecture"
 )

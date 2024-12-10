@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import TIMESTAMP, String, Integer
+from sqlalchemy import ARRAY, TIMESTAMP, String, Integer
 from sqlalchemy.orm import Mapped, mapped_column
 # from sqlalchemy.ext.mutable import MutableList
 from src.db.base_class import Base
