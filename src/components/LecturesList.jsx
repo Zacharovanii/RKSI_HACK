@@ -1,8 +1,12 @@
 import React, { useState, useEffect} from 'react';
 import ZnaniumApi from '../API/API';
+import CreateLectureModal from './Modal/Modal';
 
-async function LectureList() {
-	const [lectures, setLectures] = useState()
+function LectureList({ roleId }) {
+	const [lectures, setLectures] = useState(
+		[]
+	)
+	const [isModalVisible, setIsModalVisible] = useState(false)
 
 	useEffect(() => {
 		async function getLectures() {
@@ -16,9 +20,26 @@ async function LectureList() {
     });
   }, []);
 
+	const createLecture = () => {
+		setIsModalVisible(isModalVisible === false)
+	}
+
+	const Menu = () => {
+		if (roleId == 4 | roleId == 2) {
+			return (
+				<>
+					<button onClick={createLecture} >Add lecture</button>
+					<CreateLectureModal isOpen={isModalVisible} onClose={createLecture} ></CreateLectureModal>
+				</>
+			)
+		}
+		return <></>
+	}
+
 	if (lectures) {
 		return (
 			<div>
+				<Menu/>
 				{lectures.map((lecture, index) => (
 					<div key={index} className="lecture">
 						<h2>{lecture.lecture_name}</h2>

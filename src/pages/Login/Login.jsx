@@ -55,18 +55,7 @@ function Login() {
             required
           />
         </label>
-
-        <label>
-          Phone:
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-          />
-        </label>
-
+				
         <button type="submit">Login</button>
       </form>
 			<p>

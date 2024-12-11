@@ -4,18 +4,19 @@ import "./Greet.css";
 
 function Greet() {
   return (
-    <div className="home-container">
-      <h1>Знаниум</h1>
-      <p>Добро пожаловать! Выберите действие:</p>
-      <div className="home-buttons">
-        <Link to="/register">
-          <button className="home-button">Регистрация</button>
+		<div className="main">
+			<div className="container">
+    	<h1 className="name">Знаниум</h1>
+    	<p className="txt1">Обрзовательная платформа</p>
+
+    	<Link to="/register">
+          <button className="in btn">Регистрация</button>
         </Link>
         <Link to="/login">
-          <button className="home-button">Логин</button>
-        </Link>
-      </div>
+          <button className="reg btn">Логин</button>
+      </Link>
     </div>
+		</div>
   );
 }
 

@@ -44,4 +44,42 @@ export default class ZnaniumApi {
 		return response
 	}
 
+	static async createLecture(data) {
+		const response = await this.api.post("/lecture/create", data, {
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+		return response
+	}
+	static async getVacancies() {
+		const response = await this.api.get('/vacancy/',{
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		}
+		)
+		return response
+
+	}
+
+	static async createVacancy(data) {
+		const response = await this.api.post("/vacancy/create", data, {
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+		return response
+	}
+
+	static async getTeachers() {
+		const response = this.api.get("/teachers")
+		return response
+	}
+
+	static async getStudents()
+	{
+		const response = this.api.get("/students")
+		return response
+	}
 }

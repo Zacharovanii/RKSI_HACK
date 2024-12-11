@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-// Контекст авторизации
+
 const AuthContext = createContext();
 
-// Провайдер для контекста
+
 export function AuthProvider({ children }) {
   const [isAuth, setIsAuth] = useState(() => {
     const savedAuth = localStorage.getItem('isAuth');

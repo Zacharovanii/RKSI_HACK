@@ -1,36 +1,57 @@
-.home-container {
-  text-align: center;
-  margin-top: 100px;
+.container {
+  display: flex; 
+  flex-wrap: wrap; 
+  max-width: 500px; 
+  min-width: 50px;
+  padding: 35px;  
+  border-radius: 60px;  
+  background: radial-gradient(circle, #6C2C7D 150px, rgb(201, 141, 234));
 }
 
-h1 {
-  font-size: 3rem;
-  color: #007bff;
-  margin-bottom: 20px;
-}
-
-p {
-  font-size: 1.5rem;
-  margin-bottom: 30px;
-}
-
-.home-buttons {
+.main {
+	padding: 0;
+	margin: 0;
+  height: 100vh; 
   display: flex;
-  justify-content: center;
-  gap: 20px;
+  justify-content: center;    
+  align-items: center; 
+  background-color: #6C2C7D; 
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-.home-button {
-  padding: 10px 20px;
-  font-size: 1.2rem;
-  color: #fff;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.btn {
+  flex: 1 1 auto; 
+  min-width: 330px;
+  min-height: 70px;
+  box-sizing: border-box; 
+  background-color: #6C2C7D; 
+  color: white; 
+  font-size: 22px;
+  border: 10%;
+  border-color: white;
+  border-radius: 20px;
+  margin-left: 18%;
+  margin-top: 50px;
+  padding: 15px;
+
 }
 
-.home-button:hover {
-  background-color: #0056b3;
+.in {
+  margin-top: 50px;
+}
+
+.name {
+  margin: auto;
+  margin-top: 25px;
+  margin-left: 22%;
+  font-size: 65px;
+  color: white;
+}
+
+.txt1 {
+  color: white;
+  opacity: 50%;
+  font-size: 25px;
+  margin-left: 16%;
+  margin-top: 1px;
 }
