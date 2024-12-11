@@ -25,19 +25,17 @@ class UserCreate(schemas.BaseUserCreate):
     
     @validator("password")
     def validate_password_complexity(cls, value: str):
-        """
-        Проверка сложности пароля:
-        - Минимум 8 символов (ограничено через Field);
-        - Должна содержать хотя бы одну заглавную букву;
-        - Должна содержать хотя бы одну цифру;
-        - Должна содержать хотя бы один специальный символ.
-        """
         if not re.search(r"[A-Z]", value):
             raise ValueError("Пароль должен содержать хотя бы одну заглавную букву")
         if not re.search(r"[0-9]", value):
             raise ValueError("Пароль должен содержать хотя бы одну цифру")
         if not re.search(r"[!@#$%^&*(),.?\":{}|<>_-]", value):
             raise ValueError("Пароль должен содержать хотя бы один специальный символ")
+        return value
+    @validator("phone_number")
+    def validate_phone_number(cls, value: str):
+        if not re.fullmatch(r"\d+", value):
+            raise ValueError("Номер телефона должен содержать только цифры")
         return value
 
 class UserResponse:

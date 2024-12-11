@@ -103,3 +103,26 @@ async def get_avatar_endpoint(user_id: int):
 async def remove_avatar_endpoint(user: User = Depends(current_user)):
     user_id = user.id
     return await remove_avatar(user_id)
+
+@router.get("/administrator")
+async def get_employers():
+    return await get_users_by_role(role_id=4)
+
+@router.get("/employers")
+async def get_employers():
+    return await get_users_by_role(role_id=3)
+
+@router.get("/teachers")
+async def get_teachers():
+    return await get_users_by_role(role_id=2)
+
+@router.get("/students")
+async def get_students():
+    return await get_users_by_role(role_id=1)
+
+async def get_users_by_role(role_id: int):
+    async with async_session_maker() as async_session:
+        result = await async_session.execute(select(User).where(User.role_id == role_id))
+        user_records = result.scalars().all()
+        users = [UserResponse(user) for user in user_records]
+    return {"state": 200, "users": users}

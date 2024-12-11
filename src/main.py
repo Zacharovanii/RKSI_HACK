@@ -1,12 +1,9 @@
 from enum import Enum
-
 from fastapi import FastAPI
 from src.settings import settings
-
 from src.auth.auth import auth_backend
 from src.auth.schemas import UserCreate, UserRead
 from fastapi.middleware.cors import CORSMiddleware
-
 from src.user.router import router as router_user
 from src.vacancy.router import router_vacancy
 from src.lecture.router import router_lecture
@@ -49,6 +46,7 @@ class Tags(Enum):
     statistics = 'statistics_funcs'
     achievements = 'achievements_funcs'
     portfolio = 'portfolio_funcs'
+    video = 'Video Calls'
 
 
 # Объявление роутеров
