@@ -7,7 +7,7 @@ load_dotenv(dotenv_path = env_path)
 
 class Settings:
     PROJECT_NAME:str = "Znanium"
-    PROJECT_VERSION: str = "0.1.0"
+    PROJECT_VERSION: str = "0.2.0"
 
     POSTGRES_USER: str = os.getenv("POSTGRES_USER")
     POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")

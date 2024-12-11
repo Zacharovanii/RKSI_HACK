@@ -31,6 +31,6 @@ async def remove_avatar(user_id: int):
     
     if os.path.exists(file_path):
         os.remove(file_path)
-        return {"state": 200, "description": "Ваш аватар сброшен до стандартного."}
+        return {"state": 200, "description": "Your avatar has been reset to the default."}
     else:
-        return {"state": 200, "description": "Ваша аватарка стандартная."}
+        return {"state": 200, "description": "Your avatar is already the default."}

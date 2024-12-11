@@ -12,7 +12,6 @@ from sqlalchemy.orm.attributes import flag_modified
 router_lecture = APIRouter()
 
 
-# Получить все лекции
 @router_lecture.get("/")
 async def get_all_lectures() -> list[LectureReadModel]:
     async with AsyncSession(async_engine) as session:
@@ -22,7 +21,6 @@ async def get_all_lectures() -> list[LectureReadModel]:
         return lectures
 
 
-# Получить лекцию по ID
 @router_lecture.get("/{lecture_id}", response_model=LectureReadModel)
 async def get_lecture(lecture_id: int) -> LectureReadModel:
     async with AsyncSession(async_engine) as session:
@@ -31,13 +29,12 @@ async def get_lecture(lecture_id: int) -> LectureReadModel:
         if not lecture:
             raise HTTPException(
                 status_code=404, 
-                detail="Лекция не найдена"
+                detail="Lecture not found"
             )
 
         return lecture
 
 
-# Создать новую лекцию
 @router_lecture.post("/create")
 async def create_lecture(lecture: LectureCreateModel, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:
@@ -57,16 +54,15 @@ async def create_lecture(lecture: LectureCreateModel, user: User = Depends(curre
             await session.commit()
 
             return {
-                "message": "Лекция успешно создана"
+                "message": "The lecture has been created successfully"
             }
         else:
             raise HTTPException(
                 status_code=403,
-                detail="Недостаточно прав для создания лекции"
+                detail="Insufficient rights to create a lecture"
             )
 
 
-# Редактировать лекцию
 @router_lecture.put("/{lecture_id}/edit")
 async def edit_lecture(lecture_id: int, new_lecture: LectureEditModel, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:
@@ -78,27 +74,26 @@ async def edit_lecture(lecture_id: int, new_lecture: LectureEditModel, user: Use
             if not lecture:
                 raise HTTPException(
                     status_code=404,
-                    detail="Лекция не найдена"
+                    detail="Lecture not found"
                 )
 
             lecture.content = new_lecture.content
             lecture.lecture_name = new_lecture.lecture_name
-            lecture.video_links = new_lecture.video_links
+            lecture.video_links= new_lecture.video_links
 
             await session.commit()
             await session.refresh(lecture)
 
             return {
-                "message": "Лекция успешно отредактирована"
+                "message": "The lecture has been edited successfully"
             }
         else:
             raise HTTPException(
                 status_code=403,
-                detail="Недостаточно прав для редактирования лекции"
+                detail="Insufficient rights to edit a lecture"
             )
 
 
-# Удалить лекцию
 @router_lecture.delete("/{lecture_id}/delete")
 async def delete_lecture(lecture_id: int, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:
@@ -109,24 +104,46 @@ async def delete_lecture(lecture_id: int, user: User = Depends(current_user)) ->
             if not lecture:
                 raise HTTPException(
                     status_code=404, 
-                    detail="Лекция не найдена"
+                    detail="Lecture not found"
                 )
 
             await session.delete(lecture)
             await session.commit()
 
             return {
-                "message": "Лекция успешно удалена"
+                "message": "Lectutre has been deleted successfully"
             }
         else:
             raise HTTPException(
                 status_code=403, 
-                detail="Недостаточно прав для удаления лекции"
+                detail="Insufficient rights to delete a lecture"
             )
 
 
-# Добавить лекцию в список просмотренных
-@router_lecture.put("/{id}")
+# @router_lecture.get("/{lecture_id}/participants")
+# async def get_lecture_participants(lecture_id: int):
+#     async with AsyncSession(async_engine) as session:
+#         lecture = await session.get(Lecture, lecture_id)
+
+#         if not lecture:
+#             raise HTTPException(
+#                 status_code=404, 
+#                 detail="Lecture not found"
+#             )
+
+#         query = select(User)
+#         result = await session.execute(query)
+#         users = result.scalars().all()
+
+#         participants = [user for user in users if lecture_id in getattr(user, "lectures", [])]
+
+#         return {
+#             "message": f"Участники лекции {lecture_id}: ", 
+#             "participants": participants
+#             }
+
+
+@router_lecture.put("/{id}/watched")
 async def add_watched_lecture(id: int, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:
         lecture = await session.get(Lecture, id)
@@ -135,32 +152,31 @@ async def add_watched_lecture(id: int, user: User = Depends(current_user)) -> di
         if not lecture:
             raise HTTPException(
                 status_code=404,
-                detail="Лекция не найдена"
+                detail="Lecture not found"
             )
         
-        if user.role_id == 1:
+        if user.role_id == 1 or user.role_id == 4:
             if lecture.id not in user.watched_lectures:
                 user.watched_lectures.append(lecture.id)
                 flag_modified(user, "watched_lectures")
                 await session.commit()
 
                 return {
-                    "message": "Лекция добавлена в список просмотренных. Список обновлен."
+                    "message": "Lecture has been added successfully. List of watched lectures has been updated."
                 }
             else:
                 raise HTTPException(
                     status_code=412, 
-                    detail="Лекция уже добавлена в список просмотренных"
+                    detail="Lecture already watched"
                 )
         else:
             raise HTTPException(
                 status_code=412, 
-                detail="Вы не можете добавить лекции в список просмотренных"
+                detail="You can not add lectures to watched lectures list"
             )
-
-
-# Добавить лекцию в список планируемых
-@router_lecture.put("/{id}")
+        
+    
+@router_lecture.put("/{id}/planed")
 async def add_planed_lecture(id: int, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:
         lecture = await session.get(Lecture, id)
@@ -169,25 +185,25 @@ async def add_planed_lecture(id: int, user: User = Depends(current_user)) -> dic
         if not lecture:
             raise HTTPException(
                 status_code=404,
-                detail="Лекция не найдена"
+                detail="Lecture not found"
             )
         
-        if user.role_id == 1:
+        if user.role_id == 1 or user.role_id == 4:
             if lecture.id not in user.planed_lectures:
-                user.planed_lectures_lectures.append(lecture.id)
+                user.planed_lectures.append(lecture.id)
                 flag_modified(user, "planed_lectures")
                 await session.commit()
 
                 return {
-                    "message": "Лекция добавлена в список планируемых. Список обновлен."
+                    "message": "Lecture has been added successfully. List of planed lectures has been updated."
                 }
             else:
                 raise HTTPException(
                     status_code=412, 
-                    detail="Лекция уже добавлена в список планируемых"
+                    detail="Lecture already planed"
                 )
         else:
             raise HTTPException(
                 status_code=412, 
-                detail="Вы не можете добавить лекции в список планируемых"
+                detail="You can not add lectures to planed lectures list"
             )

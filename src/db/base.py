@@ -3,4 +3,6 @@ from src.db.models.user import User
 from src.db.models.role import Role
 from src.db.models.lecture import Lecture
 from src.db.models.vacancy import Vacancy
+from src.db.models.achievement import Achievement
+from src.db.models.project import Project
 from src.db.models.chat import Chat, Message

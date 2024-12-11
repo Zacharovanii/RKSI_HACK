@@ -36,7 +36,7 @@ class UserCreate(schemas.BaseUserCreate):
             raise ValueError("Пароль должен содержать хотя бы одну заглавную букву")
         if not re.search(r"[0-9]", value):
             raise ValueError("Пароль должен содержать хотя бы одну цифру")
-        if not re.search(r"[!@#$%^&*(),.?\":{}|<>_]", value):
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>_-]", value):
             raise ValueError("Пароль должен содержать хотя бы один специальный символ")
         return value
 

@@ -10,7 +10,7 @@ class Lecture(Base):
     lecture_name: Mapped[str] = mapped_column(String(length=320), nullable=False)
 
     content: Mapped[str] = mapped_column(String, nullable=False)
-    video_link: Mapped[list[str]] = mapped_column(MutableList.as_mutable(ARRAY(String)), default="Видео еще не загружено.")
+    video_link: Mapped[list[str]] = mapped_column(MutableList.as_mutable(ARRAY(String)), default="The video has not been uploaded yet.")
 
     # viewers: Mapped[list[int]] = mapped_column(MutableList.as_mutable(ARRAY(Integer)), default=[])
     author: Mapped[int] = mapped_column(Integer, nullable=False)
