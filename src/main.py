@@ -15,6 +15,7 @@ from src.projects.router import router_project
 from src.chat.router import router_message
 from src.statistics.router import router_statistics
 from src.achievement.router import router_achievement
+from src.portfolio.router import router_portfolio
 
 
 app = FastAPI(
