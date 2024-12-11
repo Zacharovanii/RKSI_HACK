@@ -13,6 +13,7 @@ from src.chat.router import router_message
 from src.statistics.router import router_statistics
 from src.achievement.router import router_achievement
 from src.portfolio.router import router_portfolio
+from src.cache.router import router_cache
 
 
 app = FastAPI(
@@ -46,10 +47,15 @@ class Tags(Enum):
     statistics = 'statistics_funcs'
     achievements = 'achievements_funcs'
     portfolio = 'portfolio_funcs'
-    video = 'Video Calls'
+    cache = 'cache_funcs'
 
 
 # Объявление роутеров
+app.include_router(
+    router_cache,
+    tags=[Tags.cache],
+    prefix="/cache"
+)
 app.include_router(
     fastapi_users.get_auth_router(auth_backend),
     prefix="/auth/jwt",

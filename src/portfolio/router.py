@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.session import async_engine
 from src.user.router import current_user
-
+from fastapi_cache.decorator import cache
 from src.db.models.achievement import Achievement
 from src.db.models.project import Project
 from src.db.models.user import User
@@ -12,6 +12,7 @@ from sqlalchemy import select
 router_portfolio = APIRouter()
 
 
+@cache(expire=60)
 @router_portfolio.get("/")
 async def get_portfolio(user: User = Depends(current_user)):
     async with AsyncSession(async_engine) as session:

@@ -8,10 +8,11 @@ from src.db.models.chat import Message
 from src.db.models.chat import Chat
 from src.db.models.user import User
 from src.user.router import current_user
+from fastapi_cache.decorator import cache
 
 router_message = APIRouter()
 
-
+@cache(expire=120)
 @router_message.get("/messages/{chat_id}")
 async def get_messages(chat_id: int) -> List[MessageReadModel]:
     async with AsyncSession(async_engine) as session:
@@ -72,6 +73,7 @@ async def create_chat(chat: ChatCreateModel, user: User = Depends(current_user))
         return {"message": "Chat successfully created and added to users' Chat_ID list."}
 
 
+@cache(expire=120)
 @router_message.get("/my-chats")
 async def get_user_chats(user: User = Depends(current_user)):
     async with async_session_maker() as session:

@@ -8,10 +8,12 @@ from src.vacancy.schemas import VacancyCreateModel, VacancyReadModel, VacancyEdi
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy import select
 from src.user.router import current_user
+from fastapi_cache.decorator import cache
 
 router_vacancy = APIRouter()
 
 
+@cache(expire=60)
 @router_vacancy.get("/",  response_model=List[VacancyReadModel])
 async def get_all_vacancies() -> List[VacancyReadModel]:
     async with AsyncSession(async_engine) as session: 
@@ -21,7 +23,7 @@ async def get_all_vacancies() -> List[VacancyReadModel]:
 
         return vacancies
     
-
+@cache(expire=30)
 @router_vacancy.get("/{id}",  response_model=VacancyReadModel)
 async def get_vacancy(id: int) -> VacancyReadModel:
     async with AsyncSession(async_engine) as session:
@@ -173,7 +175,7 @@ async def delete_vacancy(id: int, user: User = Depends(current_user)) -> dict:
                 detail="Insufficient rights to delete a vacancy"
             )
 
-
+@cache(expire=30)
 @router_vacancy.put("/{id}/deactivate")
 async def get_company_vacancies(id: int, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:
@@ -205,7 +207,7 @@ async def get_company_vacancies(id: int, user: User = Depends(current_user)) -> 
                 detail="Insufficient rights to deactivate a vacancy"
             )
         
-
+@cache(expire=30)
 @router_vacancy.put("/{id}/activate")
 async def activate_vacancy(id: int, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:

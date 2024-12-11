@@ -8,10 +8,13 @@ from src.db.session import async_engine
 from src.lecture.schemas import LectureReadModel, LectureCreateModel, LectureEditModel
 from src.user.router import current_user
 from sqlalchemy.orm.attributes import flag_modified
+from fastapi_cache.decorator import cache
+
 
 router_lecture = APIRouter()
 
 
+@cache(expire=60)
 @router_lecture.get("/")
 async def get_all_lectures() -> list[LectureReadModel]:
     async with AsyncSession(async_engine) as session:
@@ -21,6 +24,7 @@ async def get_all_lectures() -> list[LectureReadModel]:
         return lectures
 
 
+@cache(expire=60)
 @router_lecture.get("/{lecture_id}", response_model=LectureReadModel)
 async def get_lecture(lecture_id: int) -> LectureReadModel:
     async with AsyncSession(async_engine) as session:
@@ -143,6 +147,7 @@ async def delete_lecture(lecture_id: int, user: User = Depends(current_user)) ->
 #             }
 
 
+@cache(expire=30)
 @router_lecture.put("/{id}/watched")
 async def add_watched_lecture(id: int, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:
@@ -175,7 +180,7 @@ async def add_watched_lecture(id: int, user: User = Depends(current_user)) -> di
                 detail="You can not add lectures to watched lectures list"
             )
         
-    
+@cache(expire=30)
 @router_lecture.put("/{id}/planed")
 async def add_planed_lecture(id: int, user: User = Depends(current_user)) -> dict:
     async with AsyncSession(async_engine) as session:

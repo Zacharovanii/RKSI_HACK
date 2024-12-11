@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.session import async_engine
-
+from fastapi_cache.decorator import cache
 from src.db.models.lecture import Lecture
 from src.db.models.user import User
 
@@ -51,6 +51,7 @@ async def get_lecture_statistics(watched: bool, planed: bool):
         return st
 
 
+@cache(expire=30)
 @router_statistics.get("/watched")
 async def get_all_lecture_views_statistics() -> dict:
     watch_st = await get_lecture_statistics(watched=True, planed=False)
@@ -60,6 +61,7 @@ async def get_all_lecture_views_statistics() -> dict:
     }
     
 
+@cache(expire=30)
 @router_statistics.get("/watched/top")
 async def get_top_lecture() -> dict:
     watch_st = await get_lecture_statistics(watched=True, planed=False)
@@ -69,6 +71,7 @@ async def get_top_lecture() -> dict:
     }
 
 
+@cache(expire=30)
 @router_statistics.get("/planed")
 async def get_all_lecture_views_statistics() -> dict:
     plan_st = await get_lecture_statistics(watched=False, planed=True)
@@ -78,6 +81,7 @@ async def get_all_lecture_views_statistics() -> dict:
     }
     
 
+@cache(expire=30)
 @router_statistics.get("/planed/top")
 async def get_top_lecture() -> dict:
     plan_st = await get_lecture_statistics(watched=False, planed=True)
@@ -87,6 +91,7 @@ async def get_top_lecture() -> dict:
     }
     
 
+@cache(expire=30)
 @router_statistics.get("/")
 async def get_full_lecture_statistics():
     return await get_lecture_statistics(watched=True, planed=True)

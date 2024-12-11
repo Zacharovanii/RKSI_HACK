@@ -19,5 +19,6 @@ class Settings:
                     f"{POSTGRES_PORT}/{POSTGRES_DB}")
     SECRET_MANAGER_USER = os.environ.get("SECRET")
     SECRET = os.environ.get("SECRET_MANAGER_USER")
+    REDIS_FILE = os.environ.get("REDIS_FILE")
 
 settings = Settings()

@@ -1,13 +1,10 @@
 from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.session import async_engine
 from src.user.router import current_user
-
-from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy import select
-
+from fastapi_cache.decorator import cache
 from src.projects.schemas import ProjectCreateModel, ProjectReadModel, ProjectEditModel
 from src.db.models.project import Project
 from src.db.models.user import User
@@ -15,6 +12,7 @@ from src.db.models.user import User
 router_project = APIRouter()
 
 
+@cache(expire=60)
 @router_project.get("/",  response_model=list[ProjectReadModel])
 async def get_all_projects() -> list[ProjectReadModel]:
     async with AsyncSession(async_engine) as session: 
@@ -25,6 +23,7 @@ async def get_all_projects() -> list[ProjectReadModel]:
         return projects
     
 
+@cache(expire=30)
 @router_project.get("/{id}",  response_model=ProjectReadModel)
 async def get_project(id: int) -> ProjectReadModel:
     async with AsyncSession(async_engine) as session:
@@ -39,6 +38,7 @@ async def get_project(id: int) -> ProjectReadModel:
         return project
     
 
+@cache(expire=30)
 @router_project.get("/user/{id}",  response_model=list[ProjectReadModel])
 async def get_all_users_projects(id: int) -> list[ProjectReadModel]:
     async with AsyncSession(async_engine) as session:
