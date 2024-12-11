@@ -46,7 +46,8 @@ class Tags(Enum):
     projects = 'projects_funcs'
     chates = 'chates_funcs'
     statistics = 'statistics_funcs'
-    achievements = 'achievements'
+    achievements = 'achievements_funcs'
+    portfolio = 'portfolio_funcs'
 
 
 # Объявление роутеров
@@ -93,4 +94,9 @@ app.include_router(
     router_achievement,
     tags=[Tags.achievements],
     prefix="/achievements"
+)
+app.include_router(
+    router_portfolio,
+    tags=[Tags.portfolio],
+    prefix="/portfolio"
 )

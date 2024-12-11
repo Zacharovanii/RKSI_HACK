@@ -20,8 +20,9 @@ class AchievementReadModel(BaseModel):
     description: str
     place: str
     rang: str
-    received_at: datetime
+    recieved_at: datetime
     is_verified: bool
+    owner_id: int
 
     class Config:
         orm_mode = True
@@ -29,9 +30,10 @@ class AchievementReadModel(BaseModel):
 
 class AchievementEditModel(BaseModel):
     name: str
-    place: str
-    rang: str
-    received_at: datetime
+    description: str
+    place: Place
+    rang: Rang
+    recieved_at: datetime
 
     class Config:
         orm_mode = True

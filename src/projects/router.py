@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,8 +15,8 @@ from src.db.models.user import User
 router_project = APIRouter()
 
 
-@router_project.get("/",  response_model=List[ProjectReadModel])
-async def get_all_projects() -> List[ProjectReadModel]:
+@router_project.get("/",  response_model=list[ProjectReadModel])
+async def get_all_projects() -> list[ProjectReadModel]:
     async with AsyncSession(async_engine) as session: 
         query = select(Project)
         result = await session.execute(query)
@@ -40,18 +39,41 @@ async def get_project(id: int) -> ProjectReadModel:
         return project
     
 
-@router_project.get("/user/{id}",  response_model=List[ProjectReadModel])
-async def get_all_user_projects(id: int) -> List[ProjectReadModel]:
+@router_project.get("/user/{id}",  response_model=list[ProjectReadModel])
+async def get_all_users_projects(id: int) -> list[ProjectReadModel]:
     async with AsyncSession(async_engine) as session:
-        query = select(Project).filter(Project.owner==id)
-        result = await session.execute(query)
-        projects = result.scalars().all()
+        user = await session.get(User, id)
 
-        return projects
+        if user:
+            query = select(Project).filter(Project.author==user)
+            result = await session.execute(query)
+            projects = result.scalars().all()
+
+            return projects
+        else:
+            raise HTTPException (
+                status_code=404,
+                detail="User not found"
+            )
+        
+
+# @router_project.get("/user",  response_model=list[ProjectReadModel])
+# async def get_all_current_users_projects(user: User = Depends(current_user)
+#                                  ) -> list[ProjectReadModel]:
+#     async with AsyncSession(async_engine) as session:
+#         user = await session.get(User, user.id)
+
+#         query = select(Project).filter(Project.author==user)
+#         result = await session.execute(query)
+#         projects = result.scalars().all()
+
+#         return projects
     
 
-@router_project.post("/add")
-async def create_project(project: ProjectCreateModel, user: User = Depends(current_user)) -> dict:
+@router_project.post("/create", response_model=dict)
+async def create_project(project: ProjectCreateModel, 
+                         user: User = Depends(current_user)
+                         ) -> dict:
     async with AsyncSession(async_engine) as session:
         user = await session.get(User, user.id)
 
@@ -61,12 +83,10 @@ async def create_project(project: ProjectCreateModel, user: User = Depends(curre
             file_link=project.file_link
         )
 
-        new_project.owner = user.id
+        new_project.author = user
         new_project.created_at = datetime.now()
         
         session.add(new_project)
-        user.projects.append(new_project.title)
-        flag_modified(user, "projects")
         await session.commit()
 
         return {
@@ -74,23 +94,22 @@ async def create_project(project: ProjectCreateModel, user: User = Depends(curre
         }
 
 
-@router_project.put("/{id}/edit")
-async def edit_project(id: int, new_project: ProjectEditModel, user: User = Depends(current_user)):
+@router_project.put("/{id}/edit", response_model=dict)
+async def edit_project(id: int, 
+                       new_project: ProjectEditModel, 
+                       user: User = Depends(current_user)
+                       ) -> dict:
     async with AsyncSession(async_engine) as session:
         user = await session.get(User, user.id)
         project = await session.get(Project, id)
 
         if user.role_id == 4 or user.id == 1:
             if project:
-                if user.id == project.owner:
-                    user.projects.remove(project.title)
-                    
+                if project.author == user:
                     project.title = new_project.title
                     project.description = new_project.description
                     project.file_link=new_project.file_link
 
-                    user.projects.append(project.title)
-                    flag_modified(user, "projects")
                     await session.commit()
 
                     return {
@@ -113,8 +132,9 @@ async def edit_project(id: int, new_project: ProjectEditModel, user: User = Depe
             )
             
 
-@router_project.delete("/delete")
-async def delete_all_projects(user: User = Depends(current_user)) -> dict:
+@router_project.delete("/delete", response_model=dict)
+async def delete_all_projects(user: User = Depends(current_user)
+                              ) -> dict:
     async with AsyncSession(async_engine) as session:
         user = await session.get(User, user.id)
 
@@ -127,15 +147,6 @@ async def delete_all_projects(user: User = Depends(current_user)) -> dict:
                 await session.delete(project)
                 await session.commit()
 
-            query = select(User)
-            result = await session.execute(query)
-            users = result.scalars().all()
-
-            for user in users:
-                user.projects.clear
-                flag_modified(user, "projects")
-                await session.commit()
-
             return {
                 "message": "All projects have been deleted successfully"
             }
@@ -146,33 +157,36 @@ async def delete_all_projects(user: User = Depends(current_user)) -> dict:
                 )
     
 
-@router_project.delete("/{id}/delete")
-async def delete_vacancy(id: int, user: User = Depends(current_user)) -> dict:
+@router_project.delete("/{id}/delete", response_model=dict)
+async def delete_project(id: int, 
+                         user: User = Depends(current_user)
+                         ) -> dict:
     async with AsyncSession(async_engine) as session:
         user = await session.get(User, user.id)
         project = await session.get(Project, id)
 
         if user.role_id == 1 or user.role_id == 4:
             if project:
-                if user.id == project.owner:
-                    user.projects.remove(project.title)
-                    flag_modified(user, 'projects')
-                    await session.delete(project)
+                if user == project.author:
+                    session.delete(project)
                     await session.commit()
 
                     return {
                         "message": "The project has been deleted successfully"
                     }
+                
                 else:
                     raise HTTPException(
                         status_code=403,
                         detail="Only the owner and admin can delete projects"
                     )
+                
             else:
                 raise HTTPException(
                     status_code=404,
                     detail="Project not found"
                 )
+            
         else:
             raise HTTPException(
                 status_code=404,
@@ -181,21 +195,20 @@ async def delete_vacancy(id: int, user: User = Depends(current_user)) -> dict:
         
 
 @router_project.delete("/user/{id}/delete")
-async def delete_user_project(id: int, user: User = Depends(current_user)) -> dict:
+async def delete_user_project(id: int, 
+                              user: User = Depends(current_user)
+                              ) -> dict:
     async with AsyncSession(async_engine) as session:
         target_user = await session.get(User, id)
         current_user = await session.get(User, user.id)
 
         if current_user.role_id == 4:
-            query = select(Project).filter(Project.owner==id)
+            query = select(Project).filter(Project.author==target_user)
             result = await session.execute(query)
             projects = result.scalars().all()
 
             for project in projects:
                 session.delete(project)
-
-            target_user.projects.clear()
-            flag_modified(target_user, "projects")
 
             await session.commit()
 

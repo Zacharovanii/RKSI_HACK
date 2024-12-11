@@ -15,7 +15,7 @@ class ProjectReadModel(BaseModel):
     title: str
     description: str
     file_link: str
-    owner: int
+    author_id: int
     created_at: datetime
 
     class Config:
